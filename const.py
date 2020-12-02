@@ -1,8 +1,14 @@
+WIDTH = 600
+HEIGHT = 400
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+
 def to_rgb(h, s, v):
     if s == 0:
         return (v, v, v)
 
-    s /= 256
+    s /= 255
     h /= 60
     i = int(h)
     f = h - i

@@ -1,88 +1,60 @@
 import pygame
-from pygame.constants import (
-    KEYDOWN,
-    K_x,
-    MOUSEBUTTONDOWN,
-    MOUSEBUTTONUP,
-    QUIT,
-    K_9,
-    K_0,
-)
+from pygame.constants import KEYDOWN, QUIT
 from pygame.font import SysFont
-from fxns import to_rgb, to_hex, to_hsv
-
-WIDTH = 600
-HEIGHT = 400
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
-# txt = font.render("hello", True, (0, 0, 0))
-# win.blit(txt, (150, 200))
-
-
-class SliderStruct:
-    def __init__(self, y):
-        self.xPad = (WIDTH - 360) // 2
-        self.xBound = [self.xPad, self.xPad + 360]
-        self.set_y(y)
-
-    def set_y(self, y):
-        self.y = y
-        self.bbox = pygame.Rect(self.xBound[0] - 20, y - 10, self.xBound[1] + 20, 25)
-
-    def clicked(self, x, y):
-        topleft = self.bbox.topleft
-        botright = self.bbox.bottomright
-        return topleft[0] <= x <= botright[0] and topleft[1] <= y <= botright[1]
+from const import *
+from widgets import SliderWidget, GradientWidget
 
 
 class ColorPicker:
     def __init__(self, win, hue=0):
         self.win = win
-        self.font = SysFont("calibri", 16)
+        self.font = SysFont("calibri", 24, bold=True)
         self.hue = hue
-        self.slider = SliderStruct(HEIGHT - 50)
-        self.draw_slider()
+        self.sat = 255
+        self.val = 255
+        self.slider = SliderWidget()
+        self.gradient = GradientWidget()
+        self.draw_all()
 
-    def draw_slider(self):
-        for h in range(360):
-            self.circle(h + self.slider.xPad, self.slider.y, to_rgb(h, 255, 255), 1)
-        circleX = self.slider.xPad + self.hue
-        self.circle(circleX, self.slider.y, WHITE, 10)
-        self.circle(circleX, self.slider.y, to_rgb(self.hue, 255, 255), 8)
+    def draw_all(self):
+        self.draw_slider()
         self.draw_gradient()
         self.draw_preview()
-        self.update()
 
-    def draw_preview(self):
-        pass
+    def draw_slider(self):
+        self.slider.draw(self.win)
+        circleX = self.slider.x + self.hue
+        self.circle(circleX, self.slider.y, WHITE, 10)
+        self.circle(circleX, self.slider.y, to_rgb(self.hue, 255, 255), 8)
+        self.slider.update()
+        self.draw_gradient()
 
     def draw_gradient(self):
-        x = y = 30
-        bd = 3
-        size = 256
-        pygame.draw.rect(
-            self.win, WHITE, (x - bd, y - bd, size + bd * 2, size + bd * 2)
-        )
-        target = pygame.Rect(30, 30, size, size)
-        extreme = to_rgb(self.hue, 255, 255)
+        self.gradient.draw(self.win, to_rgb(self.hue, 255, 255))
+        circleX = self.gradient.x + self.sat
+        circleY = self.gradient.y - self.val + 255
+        self.circle(circleX, circleY, WHITE, 10)
+        self.circle(circleX, circleY, to_rgb(self.hue, self.sat, self.val), 8)
+        self.gradient.update()
+        self.draw_preview()
 
-        surface = pygame.Surface((2, 2))
-        pygame.draw.rect(surface, WHITE, (0, 0, 1, 1))
-        pygame.draw.rect(surface, BLACK, (0, 1, 1, 1))
-        pygame.draw.rect(surface, extreme, (1, 0, 1, 1))
-        pygame.draw.rect(surface, BLACK, (1, 1, 1, 1))
-        surface = pygame.transform.smoothscale(surface, (target.width, target.height))
-        self.win.blit(surface, target)
+    def draw_preview(self):
+        r, g, b = to_rgb(self.hue, self.sat, self.val)
+        hexx = to_hex(r, g, b)
+        texts = [
+            f"HEX: {hexx}",
+            f"RGB: {r}, {g}, {b}",
+            f"HSV: {self.hue}, {self.sat}, {self.val}",
+        ]
+        y = 150
+        for text in texts:
+            rnd = self.font.render(text, True, WHITE)
+            win.blit(rnd, (400, y))
+            y += 30
+        pygame.display.update(pygame.Rect(350, 130, 250, 120))
 
     def circle(self, x: int, y: int, color: tuple, radius: int):
         pygame.draw.circle(self.win, color, (x, y), radius)
-
-    def update(self, rect=None):
-        if not rect:
-            pygame.display.update()
-        else:
-            pygame.display.update(rect)
 
     def __call__(self):
         run = True
@@ -96,8 +68,16 @@ class ColorPicker:
                     if self.slider.clicked(mx, my):
                         mx = max(mx, self.slider.xBound[0])
                         mx = min(mx, self.slider.xBound[1])
-                        self.hue = mx - self.slider.xPad
+                        self.hue = min(359, mx - self.slider.x)
                         self.draw_slider()
+                    elif self.gradient.clicked(mx, my):
+                        mx = max(mx, self.gradient.xBound[0])
+                        mx = min(mx, self.gradient.xBound[1])
+                        self.sat = mx - self.gradient.x
+                        my = max(my, self.gradient.yBound[0])
+                        my = min(my, self.gradient.yBound[1] - 1)
+                        self.val = -(my - self.gradient.y - 255)
+                        self.draw_gradient()
                 elif event.type == KEYDOWN:
                     print(event.unicode)
         return

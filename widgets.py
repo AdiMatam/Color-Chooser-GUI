@@ -1,5 +1,5 @@
 import pygame
-from const import BLACK, WIDTH, HEIGHT, to_rgb, WHITE
+from const import BBOX, BLACK, WIDTH, HEIGHT, to_rgb, WHITE
 
 
 class Widget:
@@ -11,7 +11,10 @@ class Widget:
         self.xBound = (self.x, self.x + self.width)
         self.yBound = (self.y, self.y + self.height)
         self.bbox = pygame.Rect(
-            self.xBound[0] - 10, self.y - 10, self.width + 20, self.height + 20
+            self.xBound[0] - BBOX,
+            self.y - BBOX,
+            self.width + BBOX * 2,
+            self.height + BBOX * 2,
         )
 
     def clicked(self, x, y):
@@ -30,7 +33,7 @@ class SliderWidget(Widget):
     def draw(self, win):
         x = 0
         for h in range(360):
-            pygame.draw.rect(win, to_rgb(h, 255, 255), (self.x + x, self.y, 3, 3))
+            pygame.draw.rect(win, to_rgb(h, 255, 255), (self.x + x, self.y, 2, 6))
             x += 1
 
 

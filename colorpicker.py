@@ -24,8 +24,8 @@ class ColorPicker:
     def draw_slider(self):
         self.slider.draw(self.win)
         circleX = self.slider.x + self.hue
-        self.circle(circleX, self.slider.y, WHITE, 10)
-        self.circle(circleX, self.slider.y, to_rgb(self.hue, 255, 255), 8)
+        self.circle(circleX, self.slider.y + 2, WHITE, BBOX)
+        self.circle(circleX, self.slider.y + 2, to_rgb(self.hue, 255, 255), BBOX - 2)
         self.slider.update()
         self.draw_gradient()
 
@@ -33,8 +33,8 @@ class ColorPicker:
         self.gradient.draw(self.win, to_rgb(self.hue, 255, 255))
         circleX = self.gradient.x + self.sat
         circleY = self.gradient.y - self.val + 255
-        self.circle(circleX, circleY, WHITE, 10)
-        self.circle(circleX, circleY, to_rgb(self.hue, self.sat, self.val), 8)
+        self.circle(circleX, circleY, WHITE, BBOX)
+        self.circle(circleX, circleY, to_rgb(self.hue, self.sat, self.val), BBOX - 2)
         self.gradient.update()
         self.draw_preview()
 
@@ -72,11 +72,11 @@ class ColorPicker:
                         self.draw_slider()
                     elif self.gradient.clicked(mx, my):
                         mx = max(mx, self.gradient.xBound[0])
-                        mx = min(mx, self.gradient.xBound[1])
+                        mx = min(mx, self.gradient.xBound[1] - 1)
                         self.sat = mx - self.gradient.x
                         my = max(my, self.gradient.yBound[0])
                         my = min(my, self.gradient.yBound[1] - 1)
-                        self.val = -(my - self.gradient.y - 255)
+                        self.val = self.gradient.y + 255 - my
                         self.draw_gradient()
                 elif event.type == KEYDOWN:
                     print(event.unicode)

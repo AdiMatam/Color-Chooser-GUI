@@ -2,6 +2,7 @@ WIDTH = 600
 HEIGHT = 400
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+BBOX = 12
 
 
 def to_rgb(h, s, v):

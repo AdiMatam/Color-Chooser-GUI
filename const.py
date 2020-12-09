@@ -2,7 +2,10 @@ WIDTH = 600
 HEIGHT = 400
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GRAY = (230, 230, 230)
 BBOX = 12
+DOT = GRAY
+ERASE = "\x1b[2K"
 
 
 def to_rgb(h, s, v):

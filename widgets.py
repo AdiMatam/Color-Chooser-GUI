@@ -11,10 +11,7 @@ class Widget:
         self.xBound = (self.x, self.x + self.width)
         self.yBound = (self.y, self.y + self.height)
         self.bbox = pygame.Rect(
-            self.xBound[0] - BBOX,
-            self.y - BBOX,
-            self.width + BBOX * 2,
-            self.height + BBOX * 2,
+            self.x - BBOX, self.y - BBOX, self.width + BBOX * 2, self.height + BBOX * 2,
         )
 
     def clicked(self, x, y):
@@ -42,10 +39,10 @@ class GradientWidget(Widget):
         super().__init__(30, 30, 256, 256)
 
     def draw(self, win, color):
-        bd = 3
+        bd = 1
         pygame.draw.rect(
             win,
-            WHITE,
+            BLACK,
             (self.x - bd, self.y - bd, self.width + bd * 2, self.height + bd * 2),
         )
         surface = pygame.Surface((2, 2))
@@ -54,5 +51,5 @@ class GradientWidget(Widget):
         pygame.draw.rect(surface, color, (1, 0, 1, 1))
         pygame.draw.rect(surface, BLACK, (1, 1, 1, 1))
         target = pygame.Rect(30, 30, self.width, self.height)
-        surface = pygame.transform.smoothscale(surface, (self.width, self.height))
-        win.blit(surface, target)
+        gradient = pygame.transform.smoothscale(surface, (self.width, self.height))
+        win.blit(gradient, target)

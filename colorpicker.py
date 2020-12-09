@@ -12,6 +12,7 @@ class ColorPicker:
         self.hue = hue
         self.sat = 255
         self.val = 255
+        self.input = ""
         self.slider = SliderWidget()
         self.gradient = GradientWidget()
         self.draw_all()
@@ -24,7 +25,7 @@ class ColorPicker:
     def draw_slider(self):
         self.slider.draw(self.win)
         circleX = self.slider.x + self.hue
-        self.circle(circleX, self.slider.y + 2, WHITE, BBOX)
+        self.circle(circleX, self.slider.y + 2, DOT, BBOX)
         self.circle(circleX, self.slider.y + 2, to_rgb(self.hue, 255, 255), BBOX - 2)
         self.slider.update()
         self.draw_gradient()
@@ -33,7 +34,7 @@ class ColorPicker:
         self.gradient.draw(self.win, to_rgb(self.hue, 255, 255))
         circleX = self.gradient.x + self.sat
         circleY = self.gradient.y - self.val + 255
-        self.circle(circleX, circleY, WHITE, BBOX)
+        self.circle(circleX, circleY, DOT, BBOX)
         self.circle(circleX, circleY, to_rgb(self.hue, self.sat, self.val), BBOX - 2)
         self.gradient.update()
         self.draw_preview()
@@ -48,7 +49,7 @@ class ColorPicker:
         ]
         y = 150
         for text in texts:
-            rnd = self.font.render(text, True, WHITE)
+            rnd = self.font.render(text, True, BLACK)
             win.blit(rnd, (400, y))
             y += 30
         pygame.display.update(pygame.Rect(350, 130, 250, 120))
@@ -63,7 +64,7 @@ class ColorPicker:
                 if event.type == QUIT:
                     run = False
                 elif pygame.mouse.get_pressed()[0]:
-                    self.win.fill(BLACK)
+                    self.win.fill(WHITE)
                     mx, my = pygame.mouse.get_pos()
                     if self.slider.clicked(mx, my):
                         mx = max(mx, self.slider.xBound[0])
@@ -79,12 +80,26 @@ class ColorPicker:
                         self.val = self.gradient.y + 255 - my
                         self.draw_gradient()
                 elif event.type == KEYDOWN:
-                    print(event.unicode)
+                    try:
+                        key = ord(event.unicode)
+                        if key == 8:
+                            print(ERASE, end="")
+                            self.input = self.input[:-1]
+                        elif key == 13:
+                            print("")
+                            self.input = ""
+                        else:
+                            self.input += event.unicode
+                        print(self.input, end="\r")
+                    except:
+                        continue
         return
 
 
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))
+win.fill(WHITE)
+pygame.display.update()
 picker = ColorPicker(win)
 picker()
 pygame.quit()

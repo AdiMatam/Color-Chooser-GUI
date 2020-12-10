@@ -38,7 +38,8 @@ class GradientWidget(Widget):
     def __init__(self):
         super().__init__(30, 30, 256, 256)
 
-    def draw(self, win, color):
+    def draw(self, win, hue: int):
+        color = to_rgb(hue, 255, 255)
         bd = 1
         pygame.draw.rect(
             win,
@@ -50,6 +51,28 @@ class GradientWidget(Widget):
         pygame.draw.rect(surface, BLACK, (0, 1, 1, 1))
         pygame.draw.rect(surface, color, (1, 0, 1, 1))
         pygame.draw.rect(surface, BLACK, (1, 1, 1, 1))
-        target = pygame.Rect(30, 30, self.width, self.height)
+        target = pygame.Rect(self.x, self.y, self.width, self.height)
         gradient = pygame.transform.smoothscale(surface, (self.width, self.height))
         win.blit(gradient, target)
+
+
+class PreviewWidget(Widget):
+    def __init__(self):
+        super().__init__(58 + 256, 30, 256, 256)
+
+    def draw(self, win, color: tuple):
+        bd = 1
+        pygame.draw.rect(
+            win,
+            BLACK,
+            (self.x - bd, self.y - bd, self.width + bd * 2, self.height + bd * 2),
+        )
+        pygame.draw.rect(win, color, (self.x, self.y, 256, 256))
+
+
+class ButtonWidget(Widget):
+    def __init__(self):
+        pass
+
+    def draw(self, win):
+        pass

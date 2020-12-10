@@ -2,7 +2,7 @@ import pygame
 from pygame.constants import KEYDOWN, QUIT
 from pygame.font import SysFont
 from const import *
-from widgets import SliderWidget, GradientWidget
+from widgets import SliderWidget, GradientWidget, PreviewWidget
 
 
 class ColorPicker:
@@ -15,6 +15,7 @@ class ColorPicker:
         self.input = ""
         self.slider = SliderWidget()
         self.gradient = GradientWidget()
+        self.preview = PreviewWidget()
         self.draw_all()
 
     def draw_all(self):
@@ -31,7 +32,7 @@ class ColorPicker:
         self.draw_gradient()
 
     def draw_gradient(self):
-        self.gradient.draw(self.win, to_rgb(self.hue, 255, 255))
+        self.gradient.draw(self.win, self.hue)
         circleX = self.gradient.x + self.sat
         circleY = self.gradient.y - self.val + 255
         self.circle(circleX, circleY, DOT, BBOX)
@@ -40,19 +41,21 @@ class ColorPicker:
         self.draw_preview()
 
     def draw_preview(self):
-        r, g, b = to_rgb(self.hue, self.sat, self.val)
-        hexx = to_hex(r, g, b)
-        texts = [
-            f"HEX: {hexx}",
-            f"RGB: {r}, {g}, {b}",
-            f"HSV: {self.hue}, {self.sat}, {self.val}",
-        ]
-        y = 150
-        for text in texts:
-            rnd = self.font.render(text, True, BLACK)
-            win.blit(rnd, (400, y))
-            y += 30
-        pygame.display.update(pygame.Rect(350, 130, 250, 120))
+        self.preview.draw(self.win, to_rgb(self.hue, self.sat, self.val))
+        self.preview.update()
+        # r, g, b = to_rgb(self.hue, self.sat, self.val)
+        # hexx = to_hex(r, g, b)
+        # texts = [
+        #     f"HEX: {hexx}",
+        #     f"RGB: {r}, {g}, {b}",
+        #     f"HSV: {self.hue}, {self.sat}, {self.val}",
+        # ]
+        # y = 150
+        # for text in texts:
+        #     rnd = self.font.render(text, True, BLACK)
+        #     win.blit(rnd, (400, y))
+        #     y += 30
+        # pygame.display.update(pygame.Rect(350, 130, 250, 120))
 
     def circle(self, x: int, y: int, color: tuple, radius: int):
         pygame.draw.circle(self.win, color, (x, y), radius)
@@ -81,15 +84,16 @@ class ColorPicker:
                         self.draw_gradient()
                 elif event.type == KEYDOWN:
                     try:
-                        key = ord(event.unicode)
-                        if key == 8:
+                        char = event.unicode
+                        code = ord(char)
+                        if code == 8:
                             print(ERASE, end="")
                             self.input = self.input[:-1]
-                        elif key == 13:
+                        elif code == 13:
                             print("")
                             self.input = ""
                         else:
-                            self.input += event.unicode
+                            self.input += char
                         print(self.input, end="\r")
                     except:
                         continue

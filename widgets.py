@@ -1,5 +1,6 @@
 import pygame
 from const import BBOX, BLACK, WIDTH, HEIGHT, to_rgb, WHITE
+from pygame.font import SysFont
 
 
 class Widget:
@@ -76,3 +77,25 @@ class ButtonWidget(Widget):
 
     def draw(self, win):
         pass
+
+
+# class TextWidget(Widget):
+#     def __init__(self, text="", font=None):
+#         self.set_text(text)
+#         if not font:
+#             self.font = SysFont("calibri", 24, bold=True)
+#         else:
+#             self.font = font
+
+#     def set_text(self, text):
+#         self.text = text
+
+#     def draw(self, text=None, color=WHITE):
+#         if text:
+#             self.set_text(text)
+#         rnd = self.font.render(self.input, True, color)
+#         rect = rnd.get_rect()
+#         x = self.preview.x + self.preview.width // 2 - rect.width // 2
+#         y = self.preview.y + self.preview.height // 2 - rect.height // 2
+#         self.win.blit(rnd, (x, y))
+

@@ -1,3 +1,6 @@
+import re
+import chemlib
+
 WIDTH = 600
 HEIGHT = 400
 WHITE = (255, 255, 255)
@@ -6,6 +9,8 @@ GRAY = (230, 230, 230)
 BBOX = 12
 DOT = GRAY
 ERASE = "\x1b[2K"
+DELIMS = r"[,\.\:\-\|]"
+PATTERN = re.compile(r"\d{1,3}[,\.\:\-\|]\d{1,3}[,\.\:\-\|]\d{1,3}")
 
 
 def to_rgb(h, s, v):

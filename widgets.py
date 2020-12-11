@@ -37,6 +37,7 @@ class SliderWidget(Widget):
 class GradientWidget(Widget):
     def __init__(self):
         super().__init__(30, 30, 256, 256)
+        self.target = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self, win, hue: int):
         color = to_rgb(hue, 255, 255)
@@ -51,9 +52,8 @@ class GradientWidget(Widget):
         pygame.draw.rect(surface, BLACK, (0, 1, 1, 1))
         pygame.draw.rect(surface, color, (1, 0, 1, 1))
         pygame.draw.rect(surface, BLACK, (1, 1, 1, 1))
-        target = pygame.Rect(self.x, self.y, self.width, self.height)
         gradient = pygame.transform.smoothscale(surface, (self.width, self.height))
-        win.blit(gradient, target)
+        win.blit(gradient, self.target)
 
 
 class PreviewWidget(Widget):

@@ -40,22 +40,22 @@ class ColorPicker:
         self.gradient.update()
         self.draw_preview()
 
-    def draw_preview(self):
+    def draw_preview(self, internal=True):
         self.preview.draw(self.win, to_rgb(self.hue, self.sat, self.val))
+        if internal:
+            self.input = f"HSV: {self.hue}, {self.sat}, {self.val}"
+        self.draw_text()
         self.preview.update()
-        # r, g, b = to_rgb(self.hue, self.sat, self.val)
-        # hexx = to_hex(r, g, b)
-        # texts = [
-        #     f"HEX: {hexx}",
-        #     f"RGB: {r}, {g}, {b}",
-        #     f"HSV: {self.hue}, {self.sat}, {self.val}",
-        # ]
-        # y = 150
-        # for text in texts:
-        #     rnd = self.font.render(text, True, BLACK)
-        #     win.blit(rnd, (400, y))
-        #     y += 30
-        # pygame.display.update(pygame.Rect(350, 130, 250, 120))
+
+    def draw_text(self):
+        if self.val > 255 // 2:
+            rnd = self.font.render(self.input, True, BLACK)
+        else:
+            rnd = self.font.render(self.input, True, WHITE)
+        rect = rnd.get_rect()
+        x = self.preview.x + self.preview.width // 2 - rect.width // 2
+        y = self.preview.y + self.preview.height // 2 - rect.height // 2
+        self.win.blit(rnd, (x, y))
 
     def circle(self, x: int, y: int, color: tuple, radius: int):
         pygame.draw.circle(self.win, color, (x, y), radius)
@@ -87,14 +87,15 @@ class ColorPicker:
                         char = event.unicode
                         code = ord(char)
                         if code == 8:
-                            print(ERASE, end="")
+                            # print(ERASE, end="")
                             self.input = self.input[:-1]
                         elif code == 13:
-                            print("")
-                            self.input = ""
+                            # enter pressed
+                            pass
                         else:
                             self.input += char
-                        print(self.input, end="\r")
+                        # print(self.input, end="\r")
+                        self.draw_preview(internal=False)
                     except:
                         continue
         return

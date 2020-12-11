@@ -1,6 +1,5 @@
 import pygame
 from const import BBOX, BLACK, WIDTH, HEIGHT, to_rgb, WHITE
-from pygame.font import SysFont
 
 
 class Widget:

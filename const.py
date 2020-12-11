@@ -1,5 +1,4 @@
 import re
-import chemlib
 
 WIDTH = 600
 HEIGHT = 400

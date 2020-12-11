@@ -11,15 +11,22 @@ from widgets import GradientWidget, PreviewWidget, SliderWidget
 
 class ColorPicker:
     def __init__(self, win, hue=0):
+        # PYGAME
         self.win = win
         self.font = SysFont("calibri", 24, bold=True)
+
+        # COLOR VALUES
         self.hue = hue
         self.sat = 255
         self.val = 255
+        self.bounds = (359, 255, 255)
+
+        # WIDGETS
         self.slider = SliderWidget()
         self.gradient = GradientWidget()
         self.preview = PreviewWidget()
         self.input = TextManager(f"HSV: {self.hue},{self.sat},{self.val}")
+
         self.draw_all()
 
     def draw_all(self):
@@ -65,10 +72,9 @@ class ColorPicker:
         pygame.draw.circle(self.win, color, (x, y), radius)
 
     def set_vals(self, vals: list) -> None:
-        bounds = (359, 255, 255)
         for i in range(3):
             vals[i] = max(0, vals[i])
-            vals[i] = min(vals[i], bounds[i])
+            vals[i] = min(vals[i], self.bounds[i])
         self.hue, self.sat, self.val = vals
 
     def __call__(self):

@@ -118,7 +118,7 @@ class ColorPicker:
         return
 
 
-a = pygame.image.load('resources\\logo.png')
+a = pygame.image.load("resources\\logo.png")
 pygame.display.set_icon(a)
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))

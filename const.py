@@ -9,7 +9,7 @@ BBOX = 12
 DOT = GRAY
 ERASE = "\x1b[2K"
 DELIMS = r"[,\.\:\-\|]"
-PATTERN = re.compile(r"\d{1,3}[,\.\:\-\|]\d{1,3}[,\.\:\-\|]\d{1,3}")
+PATTERN = re.compile(r"\d+[,\.\:\-\|]\d+[,\.\:\-\|]\d+")
 
 
 def to_rgb(h, s, v):

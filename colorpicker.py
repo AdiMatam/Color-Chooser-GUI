@@ -1,11 +1,11 @@
-from re import split
+import re
 
 import pygame
-from pygame.constants import KEYDOWN, QUIT
+from pygame.constants import KEYDOWN, K_LEFT, K_RIGHT, QUIT
 from pygame.font import SysFont
 
 from const import *
-from textmanage import TextManager
+from textmanager import TextManager
 from widgets import GradientWidget, PreviewWidget, SliderWidget
 
 
@@ -25,7 +25,7 @@ class ColorPicker:
         self.slider = SliderWidget()
         self.gradient = GradientWidget()
         self.preview = PreviewWidget()
-        self.input = TextManager(f"HSV: {self.hue},{self.sat},{self.val}")
+        self.input = TextManager(f"{self.hue},{self.sat},{self.val}")
 
         self.draw_all()
 
@@ -54,15 +54,16 @@ class ColorPicker:
     def draw_preview(self, external=False):
         self.preview.draw(self.win, to_rgb(self.hue, self.sat, self.val))
         if not external:
-            self.input.set_text(f"HSV: {self.hue},{self.sat},{self.val}")
+            self.input.set_text(f"{self.hue},{self.sat},{self.val}")
         self.draw_text()
         self.preview.update()
 
     def draw_text(self):
+        string = f"HSV: {self.input.to_str(cursor=True)}"
         if self.val > 255 // 2:
-            rnd = self.font.render(str(self.input), True, BLACK)
+            rnd = self.font.render(string, True, BLACK)
         else:
-            rnd = self.font.render(str(self.input), True, WHITE)
+            rnd = self.font.render(string, True, WHITE)
         rect = rnd.get_rect()
         x = self.preview.x + self.preview.width // 2 - rect.width // 2
         y = self.preview.y + self.preview.height // 2 - rect.height // 2
@@ -70,6 +71,9 @@ class ColorPicker:
 
     def circle(self, x: int, y: int, color: tuple, radius: int):
         pygame.draw.circle(self.win, color, (x, y), radius)
+
+    def clear(self):
+        self.win.fill(WHITE)
 
     def set_vals(self, vals: list) -> None:
         for i in range(3):
@@ -104,17 +108,25 @@ class ColorPicker:
                         char = event.unicode
                         code = ord(char)
                         if code == 8:
-                            del self.input[-1]
+                            self.input.delchar()
                             self.draw_preview(external=True)
-                        elif code == 13 and PATTERN.match(self.input[5:]):
-                            hsv = [int(num) for num in split(DELIMS, self.input[5:])]
+                        elif code == 13 and PATTERN.match(self.input.to_str()):
+                            hsv = [
+                                int(num)
+                                for num in re.split(DELIMS, self.input.to_str())
+                            ]
                             self.set_vals(hsv)
+                            self.clear()
                             self.draw_slider()
                         elif code != 32:
-                            self.input.append(char)
+                            self.input.addchar(char)
                             self.draw_preview(external=True)
                     except:
-                        continue
+                        if event.key == K_LEFT:
+                            self.input.move(-1)
+                        elif event.key == K_RIGHT:
+                            self.input.move(1)
+                        self.draw_preview(external=True)
         return
 
 

@@ -1,19 +1,22 @@
 import re
+from tkinter import Tk
 
 import pygame
 from pygame.constants import KEYDOWN, K_LEFT, K_RIGHT, QUIT
 from pygame.font import SysFont
-
 from const import *
 from textmanager import TextManager
 from widgets import GradientWidget, PreviewWidget, SliderWidget
 
 
 class ColorPicker:
-    def __init__(self, win, hue=0):
+    def __init__(self, win, root, hue=0):
         # PYGAME
         self.win = win
         self.font = SysFont("calibri", 24, bold=True)
+
+        # DUMMY TKINTER WINDOW
+        self.root = root
 
         # COLOR VALUES
         self.hue = hue
@@ -69,6 +72,20 @@ class ColorPicker:
         y = self.preview.y + self.preview.height // 2 - rect.height // 2
         self.win.blit(rnd, (x, y))
 
+    def enter_pressed(self, string):
+        hsv = [int(num.strip()) for num in re.split(DELIMS, string)]
+        self.set_vals(hsv)
+        self.clear()
+        self.draw_slider()
+
+    def adjust_text(self, code, char):
+        if code == BACKSPACE:
+            self.input.delchar()
+        elif code == PASTE:
+            self.input.set_text(root.clipboard_get())
+        else:
+            self.input.addchar(char)
+
     def circle(self, x: int, y: int, color: tuple, radius: int):
         pygame.draw.circle(self.win, color, (x, y), radius)
 
@@ -81,61 +98,58 @@ class ColorPicker:
             vals[i] = min(vals[i], self.bounds[i])
         self.hue, self.sat, self.val = vals
 
-    def __call__(self):
-        run = True
-        while run:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    run = False
-                elif pygame.mouse.get_pressed()[0]:
-                    self.win.fill(WHITE)
-                    mx, my = pygame.mouse.get_pos()
-                    if self.slider.clicked(mx, my):
-                        mx = max(mx, self.slider.xBound[0])
-                        mx = min(mx, self.slider.xBound[1])
-                        self.hue = min(359, mx - self.slider.x)
-                        self.draw_slider()
-                    elif self.gradient.clicked(mx, my):
-                        mx = max(mx, self.gradient.xBound[0])
-                        mx = min(mx, self.gradient.xBound[1] - 1)
-                        self.sat = mx - self.gradient.x
-                        my = max(my, self.gradient.yBound[0])
-                        my = min(my, self.gradient.yBound[1] - 1)
-                        self.val = self.gradient.y + 255 - my
-                        self.draw_gradient()
-                elif event.type == KEYDOWN:
-                    try:
-                        char = event.unicode
-                        code = ord(char)
-                        if code == 8:
-                            self.input.delchar()
-                            self.draw_preview(external=True)
-                        elif code == 13 and PATTERN.match(self.input.to_str()):
-                            hsv = [
-                                int(num)
-                                for num in re.split(DELIMS, self.input.to_str())
-                            ]
-                            self.set_vals(hsv)
-                            self.clear()
-                            self.draw_slider()
-                        elif code != 32:
-                            self.input.addchar(char)
-                            self.draw_preview(external=True)
-                    except:
-                        if event.key == K_LEFT:
-                            self.input.move(-1)
-                        elif event.key == K_RIGHT:
-                            self.input.move(1)
-                        self.draw_preview(external=True)
-        return
+    def mouse_action(self):
+        self.win.fill(WHITE)
+        mx, my = pygame.mouse.get_pos()
+        if self.slider.clicked(mx, my):
+            mx = max(mx, self.slider.xBound[0])
+            mx = min(mx, self.slider.xBound[1])
+            self.hue = min(359, mx - self.slider.x)
+            self.draw_slider()
+        elif self.gradient.clicked(mx, my):
+            mx = max(mx, self.gradient.xBound[0])
+            mx = min(mx, self.gradient.xBound[1] - 1)
+            self.sat = mx - self.gradient.x
+            my = max(my, self.gradient.yBound[0])
+            my = min(my, self.gradient.yBound[1] - 1)
+            self.val = self.gradient.y + 255 - my
+            self.draw_gradient()
+
+    def key_action(self, event):
+        try:
+            char = event.unicode
+            code = ord(char)
+            if PATTERN.match((string := self.input.to_str())) and code == ENTER:
+                self.enter_pressed(string)
+            else:
+                self.adjust_text(code, char)
+            self.draw_preview(external=True)
+        except:
+            if event.key == K_LEFT:
+                self.input.move(-1)
+            elif event.key == K_RIGHT:
+                self.input.move(1)
+            self.draw_preview(external=True)
 
 
-a = pygame.image.load("resources\\logo.png")
-pygame.display.set_icon(a)
+root = Tk()
+root.withdraw()
 pygame.init()
+pygame.display.set_icon(pygame.image.load("resources\\logo.png"))
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 win.fill(WHITE)
 pygame.display.update()
-picker = ColorPicker(win)
-picker()
+picker = ColorPicker(win, root)
+
+run = True
+while run:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            run = False
+            break
+        elif pygame.mouse.get_pressed()[0]:
+            picker.mouse_action()
+        elif event.type == KEYDOWN:
+            picker.key_action(event)
+root.destroy()
 pygame.quit()

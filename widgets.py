@@ -69,32 +69,3 @@ class PreviewWidget(Widget):
         )
         pygame.draw.rect(win, color, (self.x, self.y, 256, 256))
 
-
-class ButtonWidget(Widget):
-    def __init__(self):
-        pass
-
-    def draw(self, win):
-        pass
-
-
-# class TextWidget(Widget):
-#     def __init__(self, text="", font=None):
-#         self.set_text(text)
-#         if not font:
-#             self.font = SysFont("calibri", 24, bold=True)
-#         else:
-#             self.font = font
-
-#     def set_text(self, text):
-#         self.text = text
-
-#     def draw(self, text=None, color=WHITE):
-#         if text:
-#             self.set_text(text)
-#         rnd = self.font.render(self.input, True, color)
-#         rect = rnd.get_rect()
-#         x = self.preview.x + self.preview.width // 2 - rect.width // 2
-#         y = self.preview.y + self.preview.height // 2 - rect.height // 2
-#         self.win.blit(rnd, (x, y))
-

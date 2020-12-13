@@ -2,8 +2,9 @@ import re
 from tkinter import Tk
 
 import pygame
-from pygame.constants import KEYDOWN, K_LEFT, K_RIGHT, QUIT
+from pygame.constants import K_LEFT, K_RIGHT, KEYDOWN, QUIT
 from pygame.font import SysFont
+
 from const import *
 from textmanager import TextManager
 from widgets import GradientWidget, PreviewWidget, SliderWidget
